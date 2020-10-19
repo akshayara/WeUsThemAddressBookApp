@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
+        <title>Address Book</title>
+        <link rel="stylesheet" type="text/css" href="http://code.jquery.com/mobile/latest/jquery.mobile.min.css" />
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+        <script type="text/javascript" src="http://code.jquery.com/mobile/latest/jquery.mobile.min.js"></script>
+        <script type="text/javascript" src="store.js"></script>
+        <script type="text/javascript" src="contacts.js"></script>
+        <script type="text/javascript" src="add.js"></script>
+        <script type="text/javascript" src="remove.js"></script>
+        <script type="text/javascript" src="main.js"></script>
+    </head>
+
+    <body>
+        <div data-role="page" id="page-main">
+            <div data-role="header">
+                <h1>Address Book</h1>
+                <a href="#page-add" id="add" data-icon="plus" class="ui-btn-right">Add</a>
+                
+            </div>
+
+            <div data-role="content">
+                <input type="text" id="myInput" onkeyup="searchFunction()" placeholder="Search for first names..">
+                <label for="sort">Sort Contacts</label>
+                <input type="checkbox" id="sort" name="sort" />
+                <br><br>
+                <ul data-role="listview" id="all-contacts">
+                </ul>
+            </div>
+        </div>
+
+        <div data-role="page" id="page-add">
+            <div data-role="header">
+                <h1>Add Contact</h1>
+            </div>
+
+            <div data-role="content">
+                <div data-role="fieldcontain">
+                    <table>
+                        <tr>
+                            <td >
+                                <label for="profimg">Select Image</label>
+                            </td>
+                            <td>
+                                <input type="file" id="fld-profimg" name="img" accept="image/*" onchange="loadFile(event)" />
+                            </td>
+                        </tr>
+                        <tr style="width:80px">
+                            <td style="width:80px"> 
+                                <img id="outputimg" width="50px" />
+                            </td>
+                        </tr>    
+                    </table>   
+                </div>
+
+                <div data-role="fieldcontain">
+                    <table>
+                        <tr>
+                            <td >
+                                <label for="fname">First Name  </label>
+                            </td>
+                            <td>
+                                <input type="text" name="name" id="fld-fname" value="" required/>
+                            </td>
+                        </tr>
+                    </table>                   
+                </div>
+
+                <div data-role="fieldcontain">
+                    <table>
+                        <tr>
+                            <td >
+                                <label for="lname">Last Name  </label>
+                            </td>
+                            <td>
+                                <input type="text" name="name" id="fld-lname" value="" />
+                            </td>
+                        </tr>
+                    </table>    
+                </div>
+
+                <div data-role="fieldcontain">
+                     <table>
+                        <tr>
+                            <td style="width:80px">
+                                <label for="email" >Email ID</label>
+                            </td>
+                            <td>
+                                <input type="email" name="email" id="fld-email"  onChange="validateEmail(this);" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div data-role="fieldcontain">
+                    <table>
+                        <tr>
+                            <td style="width:80px">
+                                <label for="number">Number  </label>
+                            </td>
+                            <td>
+                                <input type="tel" name="phone" id="fld-phone" value=""  onChange="validatePhone(this);"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>             
+
+                <a href="#page-main" id="btn-save-contact" data-inline="true" data-role="button" data-theme="b" data-direction="reverse">Save</a>
+                <a href="#page-main" data-inline="true" data-role="button" data-direction="reverse">Cancel</a>
+            </div>
+        </div>
+        <div data-role="page" id="page-view">
+            <div data-role="header">
+                <h1>Contact Info</h1>
+                <a href="#page-main" data-direction="reverse">Back</a>
+                <a href="#page-main" id="btn-remove-contact" data-icon="minus" class="ui-btn-right" data-direction="reverse">Delete</a>
+            </div>
+
+            <div data-role="content">
+                <div><b>Contact Image: </b><span id="view-profimg"></span></div>
+                <div><b>First Name: </b><span id="view-fname"></span></div>
+                <div><b>Last Name: </b><span id="view-lname"></span></div>
+                <div><b>Email: </b><span id="view-email"></span></div>
+                <div><b>Phone: </b><span id="view-phone"></span></div>
+                
+            </div>
+            <a href="#page-add" id="btn-save-contact" data-inline="true" data-role="button" data-theme="b" data-direction="reverse">Update</a>
+        </div>
+    </body>
+</html>
+<script>
+//Script for loading profile image
+var loadFile = function(event) {
+	var image = document.getElementById('outputimg');
+	image.src = URL.createObjectURL(event.target.files[0]);
+};
+//Script for email validation
+function validateEmail(email) {
+  var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    if(!regex.test(email.value)){
+        alert("Enter a valid Email address");
+        document.getElementById('fld-email').value = "";
+    }  
+}
+//Script for Phone number validation
+function validatePhone(phone)
+{
+  var phoneno = /^\d{10}$/;
+  if((!phone.value.match(phoneno))){
+        alert("Enter valid Phone number");
+        document.getElementById('fld-phone').value = "";
+    }
+}
+//Script for search functionality
+function searchFunction() {
+    // Declare variables
+    var input, filter, ul, li, a, i, txtValue;
+    input = document.getElementById('myInput');
+    filter = input.value.toUpperCase();
+    ul = document.getElementById("all-contacts");
+    li = ul.getElementsByTagName('li');
+
+    // Loop through all list items, and hide those who don't match the search query
+    for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName("a")[0];
+        txtValue = a.textContent || a.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+        }
+    }
+}
+//Script for sorting the contact list
+function sortContacts(){
+    var a = document.getElementById("all-contacts").value; 
+    return a.sort();
+}
+
+</script>
+
+
+
